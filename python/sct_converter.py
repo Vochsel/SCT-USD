@@ -25,8 +25,8 @@ def create_usd_file(data, export_path):
     cam.CreateFocalLengthAttr().Set(data["focalLengthX"] / 10)
 
     for f in data["camera_data"]:
-        timecode = math.ceil(
-            (f[0] - data["camera_data"][0][0]) * SCT_FPS) + 3
+        timecode = (
+            (f[0] - data["camera_data"][0][0]) * SCT_FPS)
         UsdGeom.XformCommonAPI(cam).SetTranslate(
             Gf.Vec3d(f[1]["x"], f[1]["y"], f[1]["z"]), timecode)
         UsdGeom.XformCommonAPI(cam).SetRotate(Gf.Vec3f(
@@ -77,8 +77,12 @@ def extract_sct_data(filepath):
 
 def convert_video(video_path, output_image_dir):
     
+    try:
+        os.makedirs(output_image_dir)
+    except:
+        pass
+    
     ffmpeg_cmd = "ffmpeg -i \"{video}\" -vf fps={fps} \"{output_dir}/frame_%04d.png\"".format(video=video_path, fps=SCT_FPS, output_dir=output_image_dir)
-    os.makedirs(output_image_dir)
     os.system(ffmpeg_cmd)
 
 def main():
